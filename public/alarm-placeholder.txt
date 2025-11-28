@@ -1,0 +1,17 @@
+ALARM SOUND FILE REQUIRED
+
+To enable the alarm sound in Anti-Doze detection:
+
+1. Download or create an alarm sound file (WAV or MP3 format)
+2. Name it either:
+   - alarm.wav
+   - alarm.mp3
+3. Place it in the /public directory
+
+You can download free alarm sounds from:
+- https://freesound.org (search for "alarm" or "alert")
+- https://www.zapsplat.com
+- Or create your own
+
+The component will automatically use the alarm sound when drowsiness is detected.
+

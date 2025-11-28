@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download Face API Models</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .code {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Face API Models Download Guide</h1>
+    
+    <h2>Option 1: Direct Download (Recommended)</h2>
+    <p>Visit the official repository and download the models:</p>
+    <p><a href="https://github.com/justadudewhohacks/face-api.js-models" target="_blank">https://github.com/justadudewhohacks/face-api.js-models</a></p>
+    
+    <h2>Option 2: Download via Command Line</h2>
+    <p>If you have Git installed:</p>
+    <div class="code">
+        git clone https://github.com/justadudewhohacks/face-api.js-models.git temp-models<br>
+        copy temp-models\weights\*.json public\models\<br>
+        copy temp-models\weights\*.shard* public\models\<br>
+        rmdir /s /q temp-models
+    </div>
+    
+    <h2>Required Files</h2>
+    <p>You need these 6 files in the <code>public/models/</code> directory:</p>
+    <ul>
+        <li>tiny_face_detector_model-weights_manifest.json</li>
+        <li>tiny_face_detector_model-shard1</li>
+        <li>face_landmark_68_model-weights_manifest.json</li>
+        <li>face_landmark_68_model-shard1</li>
+        <li>face_expression_model-weights_manifest.json</li>
+        <li>face_expression_model-shard1</li>
+    </ul>
+    
+    <h2>Note</h2>
+    <p>The app will try to load models from CDN if local models are not found, but local models provide better performance.</p>
+</body>
+</html>
+

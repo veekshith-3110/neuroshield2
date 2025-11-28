@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="description" content="Digital Burnout Early-Warning System - Track your wellness and prevent burnout" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <title>Neuroshield - Digital Wellness Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js" onload="console.log('Face API.js loaded successfully')" onerror="console.error('Failed to load Face API.js')"></script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <svg height="0" width="0" style="position: absolute;">
+      <filter id="handDrawnNoise">
+        <feTurbulence
+          result="noise"
+          numOctaves="8"
+          baseFrequency="0.1"
+          type="fractalNoise"
+        ></feTurbulence>
+        <feDisplacementMap
+          yChannelSelector="G"
+          xChannelSelector="R"
+          scale="3"
+          in2="noise"
+          in="SourceGraphic"
+        ></feDisplacementMap>
+      </filter>
+    </svg>
+  </body>
+</html>
+

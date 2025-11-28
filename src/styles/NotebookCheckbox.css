@@ -1,0 +1,138 @@
+.notebook-checkbox .text {
+  filter: url(#handDrawnNoise);
+}
+
+.notebook-checkbox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  font-family: "Courier New", monospace;
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding-left: 2em;
+}
+
+.notebook-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  filter: url(#handDrawnNoise);
+}
+
+.notebook-checkbox .checkmark {
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  height: 1em;
+  width: 1em;
+  border-radius: 10px;
+  border: 3px solid #33333366;
+  filter: url(#handDrawnNoise);
+  background: radial-gradient(#333333f1 65%, #33333300 70%);
+  animation: unmark 0.2s forwards;
+  animation-delay: 0.5s;
+}
+
+.notebook-checkbox input:checked ~ .checkmark {
+  filter: url(#handDrawnNoise);
+  animation: mark 0.3s forwards;
+}
+
+@keyframes mark {
+  0% {
+    background: radial-gradient(#3333333d 0%, #33333300 35%);
+  }
+
+  50% {
+    background: radial-gradient(#3333333d 0%, #33333300 35%);
+  }
+
+  75% {
+    background: radial-gradient(#333333f1 35%, #33333300 60%);
+  }
+
+  100% {
+    background: radial-gradient(#333333f1 65%, #33333300 70%);
+  }
+}
+
+@keyframes unmark {
+  0% {
+    background: radial-gradient(#333333f1 65%, #33333300 70%);
+  }
+
+  50% {
+    background: linear-gradient(#333333f1 35%, #33333300 60%);
+  }
+
+  100% {
+    background: radial-gradient(#3333333d 0%, #33333300 35%);
+  }
+}
+
+.notebook-checkbox .text {
+  position: relative;
+  z-index: 1;
+  transition: color 0.3s ease;
+  display: inline-block;
+  filter: url(#handDrawnNoise);
+}
+
+.notebook-checkbox .text {
+  width: 100%;
+}
+
+.notebook-checkbox .text .text-content {
+  display: block;
+  width: 100%;
+}
+
+.notebook-checkbox .text .cut-line {
+  position: absolute;
+  left: 0em;
+  right: 0;
+  bottom: 15%;
+  height: 1em;
+  width: calc(100% + 15px);
+  pointer-events: none;
+  stroke: #333;
+  stroke-width: 2;
+  fill: none;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.notebook-checkbox input:checked ~ .text .cut-line {
+  transform: scaleX(1);
+}
+
+.notebook-checkbox input:checked ~ .text {
+  color: #222222aa;
+}
+
+/* Responsive sizing for smaller checkboxes */
+.notebook-checkbox.small {
+  font-size: 1rem;
+  padding-left: 1.5em;
+}
+
+.notebook-checkbox.small .checkmark {
+  height: 0.8em;
+  width: 0.8em;
+  top: 0.15em;
+}
+
+.notebook-checkbox.medium {
+  font-size: 1.25rem;
+  padding-left: 1.75em;
+}
+
+.notebook-checkbox.medium .checkmark {
+  height: 0.9em;
+  width: 0.9em;
+  top: 0.12em;
+}
+
