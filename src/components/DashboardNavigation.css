@@ -1,0 +1,451 @@
+.dashboard-nav-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  padding: 20px 0;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  perspective: 1000px;
+}
+
+.nav-card-parent {
+  width: 100%;
+  height: 200px;
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.nav-card-parent:hover {
+  transform: translateY(-8px) rotateX(5deg);
+}
+
+.nav-card-parent.clicked {
+  animation: cardClickAnimation 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  pointer-events: none;
+}
+
+@keyframes cardClickAnimation {
+  0% {
+    transform: translateY(-8px) rotateX(5deg) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) rotateX(15deg) rotateY(10deg) scale(1.05);
+  }
+  100% {
+    transform: translateY(-30px) rotateX(25deg) rotateY(15deg) scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+.nav-card {
+  height: 100%;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgb(0, 255, 214) 0%, rgb(8, 226, 96) 100%);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 24px;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.nav-card.clicked {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  transform: translateZ(50px);
+}
+
+.nav-card.active {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.nav-card-glass {
+  display: none;
+}
+
+.nav-card-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+}
+
+.nav-card-content .nav-title {
+  display: block;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.nav-card-content .nav-text {
+  display: block;
+  font-size: 14px;
+  line-height: 1.5;
+  opacity: 0.95;
+}
+
+.nav-card-bottom {
+  padding: 10px 12px;
+  transform-style: preserve-3d;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transform: translate3d(0, 0, 26px);
+  z-index: 2;
+}
+
+.nav-card-logo {
+  position: absolute;
+  right: -20px;
+  top: -20px;
+  width: 140px;
+  height: 140px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.nav-card-logo {
+  transform-style: preserve-3d;
+}
+
+.nav-card-logo .nav-circle {
+  display: block;
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+}
+
+.nav-card-logo .nav-circle1 {
+  width: 120px;
+  height: 120px;
+  top: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.25);
+  opacity: 0.6;
+}
+
+.nav-card-logo .nav-circle2 {
+  width: 100px;
+  height: 100px;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  opacity: 0.5;
+}
+
+.nav-card-logo .nav-circle3 {
+  width: 80px;
+  height: 80px;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  opacity: 0.4;
+}
+
+.nav-card-logo .nav-circle4 {
+  width: 60px;
+  height: 60px;
+  top: 30px;
+  right: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0.3;
+}
+
+.nav-card-logo .nav-circle5 {
+  width: 40px;
+  height: 40px;
+  top: 40px;
+  right: 40px;
+  background: rgba(255, 255, 255, 0.08);
+  opacity: 0.2;
+}
+
+.nav-card-icon {
+  display: none;
+}
+
+/* Color variations for different cards - matching image gradients */
+.nav-card.screen-time {
+  background: linear-gradient(180deg, #2563eb 0%, #3b82f6 100%);
+}
+
+.nav-card.screen-time .nav-card-content .nav-title,
+.nav-card.screen-time .nav-card-content .nav-text {
+  color: #ffffff;
+}
+
+.nav-card.screen-time .nav-card-logo .nav-circle1,
+.nav-card.screen-time .nav-card-logo .nav-circle2,
+.nav-card.screen-time .nav-card-logo .nav-circle3 {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+.nav-card.stress {
+  background: linear-gradient(180deg, #dc2626 0%, #ef4444 100%);
+}
+
+.nav-card.stress .nav-card-content .nav-title,
+.nav-card.stress .nav-card-content .nav-text {
+  color: #ffffff;
+}
+
+.nav-card.stress .nav-card-logo .nav-circle1,
+.nav-card.stress .nav-card-logo .nav-circle2,
+.nav-card.stress .nav-card-logo .nav-circle3 {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.nav-card.anti-doze {
+  background: linear-gradient(180deg, #f97316 0%, #fb923c 100%);
+}
+
+.nav-card.anti-doze .nav-card-content .nav-title,
+.nav-card.anti-doze .nav-card-content .nav-text {
+  color: #000000;
+}
+
+.nav-card.anti-doze .nav-card-logo .nav-circle1,
+.nav-card.anti-doze .nav-card-logo .nav-circle2,
+.nav-card.anti-doze .nav-card-logo .nav-circle3 {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.nav-card.daily-log {
+  background: linear-gradient(180deg, #06b6d4 0%, #22d3ee 100%);
+}
+
+.nav-card.daily-log .nav-card-content .nav-title,
+.nav-card.daily-log .nav-card-content .nav-text {
+  color: #ffffff;
+}
+
+.nav-card.daily-log .nav-card-logo .nav-circle1,
+.nav-card.daily-log .nav-card-logo .nav-circle2,
+.nav-card.daily-log .nav-card-logo .nav-circle3 {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+.nav-card.dashboard {
+  background: linear-gradient(180deg, #16a34a 0%, #22c55e 100%);
+}
+
+.nav-card.dashboard .nav-card-content .nav-title,
+.nav-card.dashboard .nav-card-content .nav-text {
+  color: #ffffff;
+}
+
+.nav-card.dashboard .nav-card-logo .nav-circle1,
+.nav-card.dashboard .nav-card-logo .nav-circle2,
+.nav-card.dashboard .nav-card-logo .nav-circle3 {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.nav-card.recommendations {
+  background: linear-gradient(180deg, #4b5563 0%, #6b7280 100%);
+}
+
+.nav-card.recommendations .nav-card-content .nav-title,
+.nav-card.recommendations .nav-card-content .nav-text {
+  color: #ffffff;
+}
+
+.nav-card.recommendations .nav-card-logo .nav-circle1,
+.nav-card.recommendations .nav-card-logo .nav-circle2,
+.nav-card.recommendations .nav-card-logo .nav-circle3 {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.nav-card.ai-mentor {
+  background: linear-gradient(180deg, #9333ea 0%, #a855f7 100%);
+}
+
+.nav-card.ai-mentor .nav-card-content .nav-title,
+.nav-card.ai-mentor .nav-card-content .nav-text {
+  color: #ffffff;
+}
+
+.nav-card.ai-mentor .nav-card-logo .nav-circle1,
+.nav-card.ai-mentor .nav-card-logo .nav-circle2,
+.nav-card.ai-mentor .nav-card-logo .nav-circle3 {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.nav-card.nearby-doctors {
+  background: linear-gradient(180deg, #dc2626 0%, #ef4444 100%);
+}
+
+.nav-card.nearby-doctors .nav-card-content .nav-title,
+.nav-card.nearby-doctors .nav-card-content .nav-text {
+  color: #ffffff;
+}
+
+.nav-card.nearby-doctors .nav-card-logo .nav-circle1,
+.nav-card.nearby-doctors .nav-card-logo .nav-circle2,
+.nav-card.nearby-doctors .nav-card-logo .nav-circle3 {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.nav-card.records {
+  background: linear-gradient(180deg, #7c3aed 0%, #8b5cf6 100%);
+}
+
+.nav-card.records .nav-card-content .nav-title,
+.nav-card.records .nav-card-content .nav-text {
+  color: #ffffff;
+}
+
+.nav-card.records .nav-card-logo .nav-circle1,
+.nav-card.records .nav-card-logo .nav-circle2,
+.nav-card.records .nav-card-logo .nav-circle3 {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+/* Hover effects with 3D transforms */
+.nav-card-parent:hover .nav-card {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  transform: translateZ(20px) rotateX(-5deg);
+}
+
+.nav-card-parent:hover .nav-card .nav-card-logo .nav-circle1 {
+  transform: scale(1.15) translateZ(10px);
+  opacity: 0.8;
+}
+
+.nav-card-parent:hover .nav-card .nav-card-logo .nav-circle2 {
+  transform: scale(1.1) translateZ(8px);
+  opacity: 0.7;
+}
+
+.nav-card-parent:hover .nav-card .nav-card-logo .nav-circle3 {
+  transform: scale(1.08) translateZ(6px);
+  opacity: 0.6;
+}
+
+.nav-card-parent:hover .nav-card .nav-card-logo .nav-circle4 {
+  transform: scale(1.05) translateZ(4px);
+  opacity: 0.5;
+}
+
+.nav-card-parent:hover .nav-card .nav-card-logo .nav-circle5 {
+  transform: scale(1.02) translateZ(2px);
+  opacity: 0.4;
+}
+
+.nav-card-parent:hover .nav-card-content {
+  transform: translateZ(15px);
+}
+
+/* Click animation effects */
+.nav-card-parent.clicked .nav-card {
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+}
+
+.nav-card-parent.clicked .nav-card .nav-card-logo .nav-circle1 {
+  transform: scale(1.3) translateZ(30px);
+  opacity: 1;
+}
+
+.nav-card-parent.clicked .nav-card .nav-card-logo .nav-circle2 {
+  transform: scale(1.25) translateZ(25px);
+  opacity: 0.9;
+}
+
+.nav-card-parent.clicked .nav-card .nav-card-logo .nav-circle3 {
+  transform: scale(1.2) translateZ(20px);
+  opacity: 0.8;
+}
+
+.nav-card-parent.clicked .nav-card-content {
+  transform: translateZ(40px) scale(1.05);
+}
+
+/* Active state */
+.nav-card.active {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .dashboard-nav-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-nav-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .nav-card-parent {
+    height: 180px;
+  }
+  
+  .nav-card {
+    padding: 20px;
+  }
+  
+  .nav-card-content .nav-title {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  
+  .nav-card-content .nav-text {
+    font-size: 13px;
+  }
+
+  .nav-card-logo {
+    width: 100px;
+    height: 100px;
+    right: -15px;
+    top: -15px;
+  }
+
+  .nav-card-logo .nav-circle1 {
+    width: 90px;
+    height: 90px;
+  }
+
+  .nav-card-logo .nav-circle2 {
+    width: 75px;
+    height: 75px;
+  }
+
+  .nav-card-logo .nav-circle3 {
+    width: 60px;
+    height: 60px;
+  }
+
+  .nav-card-logo .nav-circle4 {
+    width: 45px;
+    height: 45px;
+  }
+
+  .nav-card-logo .nav-circle5 {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+

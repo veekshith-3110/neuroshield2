@@ -51,24 +51,43 @@ const AntiDoze = () => {
 
   // Play alarm sound (looping continuously until eyes open)
   const playAlarm = () => {
+    // Always try to play sound when wake-up text appears
+    console.log('🔊 Attempting to play wake-up sound...');
+    
     if (alarmAudioRef.current) {
       // Set volume (0.0 to 1.0) - loud enough to wake user
-      alarmAudioRef.current.volume = 0.8;
+      alarmAudioRef.current.volume = 0.9;
       // Ensure loop is enabled - will play continuously
       alarmAudioRef.current.loop = true;
       
+      // Check if audio is already playing
+      if (!alarmAudioRef.current.paused && !alarmAudioRef.current.ended) {
+        // Audio is already playing - ensure state is updated
+        if (!alarmPlaying) {
+          setAlarmPlaying(true);
+        }
+        console.log('✅ Alarm sound already playing');
+        return;
+      }
+      
       // Play or resume the alarm
-      if (alarmAudioRef.current.paused || alarmAudioRef.current.ended) {
+      try {
+        // Reset to beginning to ensure it plays from start
+        alarmAudioRef.current.currentTime = 0;
         const playPromise = alarmAudioRef.current.play();
         
         if (playPromise !== undefined) {
           playPromise
             .then(() => {
-              console.log('✅ Alarm sound playing (looping continuously)');
+              console.log('✅ Wake-up alarm sound playing (looping continuously)');
               setAlarmPlaying(true);
             })
             .catch(err => {
-              console.error('Error playing alarm:', err);
+              // Ignore "interrupted by pause" errors - this is normal when stopping
+              if (err.name !== 'AbortError' && err.name !== 'NotAllowedError') {
+                console.error('Error playing alarm file:', err);
+                console.log('⚠️ Falling back to system beep...');
+              }
               // Fallback: Use browser notification
               if (Notification.permission === 'granted') {
                 new Notification('⚠️ WAKE UP!', {
@@ -91,67 +110,98 @@ const AntiDoze = () => {
               playSystemBeep();
             });
         }
-      } else {
-        // Audio is already playing - ensure state is updated
-        if (!alarmPlaying) {
-          setAlarmPlaying(true);
-        }
+      } catch (error) {
+        // Handle any synchronous errors
+        console.error('Error attempting to play alarm:', error);
+        console.log('⚠️ Falling back to system beep...');
+        playSystemBeep();
       }
     } else {
-      // No audio file, use system beep
+      // No audio file, use system beep immediately
+      console.log('⚠️ No audio file found, using system beep...');
       playSystemBeep();
     }
   };
 
-  // System beep fallback (looping continuously)
+  // System beep fallback (looping continuously until eyes open)
   const playSystemBeep = () => {
     try {
-      if (!beepIntervalRef.current) {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
-        const playBeep = () => {
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
-          
-          oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-          
-          oscillator.frequency.value = 800; // High pitch alarm
-          oscillator.type = 'sine';
-          gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-          
-          oscillator.start(audioContext.currentTime);
-          oscillator.stop(audioContext.currentTime + 0.3);
-        };
-        
-        // Play beep immediately
-        playBeep();
-        
-        // Continue beeping every 500ms (looping continuously)
-        beepIntervalRef.current = setInterval(() => {
-          playBeep();
-        }, 500);
-        
-        setAlarmPlaying(true);
-        console.log('✅ System beep alarm started (looping continuously)');
+      // Clear any existing interval first
+      if (beepIntervalRef.current) {
+        clearInterval(beepIntervalRef.current);
+        beepIntervalRef.current = null;
       }
+
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      
+      const playBeep = () => {
+        // Only play if still drowsy
+        if (!isDrowsy) {
+          return;
+        }
+
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 1000; // Higher pitch for more attention
+        oscillator.type = 'sine';
+        gainNode.gain.setValueAtTime(0.7, audioContext.currentTime); // Louder
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.2);
+      };
+      
+      // Play beep immediately
+      playBeep();
+      
+      // Continue beeping every 300ms (faster, more urgent beeping)
+      beepIntervalRef.current = setInterval(() => {
+        if (isDrowsy) {
+          playBeep();
+        } else {
+          // Stop beeping if eyes are open
+          if (beepIntervalRef.current) {
+            clearInterval(beepIntervalRef.current);
+            beepIntervalRef.current = null;
+          }
+        }
+      }, 300);
+      
+      setAlarmPlaying(true);
+      console.log('✅ System beep alarm started (beeping continuously until eyes open)');
     } catch (beepError) {
       console.error('Could not play system beep:', beepError);
     }
   };
 
-  // Stop alarm
+  // Stop alarm (called when eyes open)
   const stopAlarm = () => {
+    console.log('🛑 Stopping alarm - eyes are open');
+    
     if (alarmAudioRef.current) {
-      alarmAudioRef.current.pause();
-      alarmAudioRef.current.currentTime = 0;
+      try {
+        // Pause the audio
+        alarmAudioRef.current.pause();
+        // Reset to beginning
+        alarmAudioRef.current.currentTime = 0;
+        console.log('✅ Audio alarm stopped');
+      } catch (error) {
+        // Ignore errors when stopping audio
+        console.log('Stopping alarm audio');
+      }
     }
+    
     // Stop system beep if running
     if (beepIntervalRef.current) {
       clearInterval(beepIntervalRef.current);
       beepIntervalRef.current = null;
+      console.log('✅ System beep stopped');
     }
+    
     setAlarmPlaying(false);
   };
 
@@ -305,6 +355,7 @@ const AntiDoze = () => {
                 if (newCount >= EYE_AR_CONSEC_FRAMES) {
                   setIsDrowsy(true);
                   // Start/continue alarm loop - will keep playing until eyes open
+                  // Play sound immediately when wake-up text appears
                   playAlarm();
                 }
                 return newCount;
@@ -332,21 +383,45 @@ const AntiDoze = () => {
     return () => clearInterval(interval);
   }, [modelsLoaded, isDetecting]);
 
-  // Ensure alarm continues playing while drowsy
+  // Ensure alarm plays immediately when wake-up text appears and continues until eyes open
   useEffect(() => {
     if (isDrowsy) {
-      // If drowsy, ensure alarm is playing (will loop continuously)
-      if (!alarmPlaying) {
-        playAlarm();
-      } else if (alarmAudioRef.current && alarmAudioRef.current.paused) {
-        // If paused but still drowsy, resume
-        alarmAudioRef.current.play();
-      }
+      // When wake-up text "⚠️ WAKE UP!!! You appear to be drowsy!" appears, immediately play sound
+      console.log('⚠️ Drowsiness detected - playing wake-up sound continuously until eyes open...');
+      playAlarm();
+      
+      // Set up interval to ensure sound keeps playing while drowsy
+      const keepAliveInterval = setInterval(() => {
+        if (isDrowsy) {
+          // Ensure audio is still playing
+          if (alarmAudioRef.current) {
+            if (alarmAudioRef.current.paused || alarmAudioRef.current.ended) {
+              console.log('🔊 Restarting alarm sound...');
+              alarmAudioRef.current.currentTime = 0;
+              alarmAudioRef.current.play().catch(err => {
+                console.log('Error restarting alarm, using system beep:', err);
+                playSystemBeep();
+              });
+            }
+          } else {
+            // No audio file, ensure system beep is playing
+            if (!beepIntervalRef.current) {
+              playSystemBeep();
+            }
+          }
+        } else {
+          // Eyes opened, clear interval
+          clearInterval(keepAliveInterval);
+        }
+      }, 1000); // Check every second to ensure sound is playing
+
+      return () => {
+        clearInterval(keepAliveInterval);
+      };
     } else {
-      // If not drowsy, stop alarm
-      if (alarmPlaying) {
-        stopAlarm();
-      }
+      // Eyes are open - stop all alarms immediately
+      console.log('✅ Eyes opened - stopping alarm...');
+      stopAlarm();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDrowsy]);
@@ -496,22 +571,31 @@ const AntiDoze = () => {
           preload="auto"
           onError={(e) => {
             console.log('Alarm audio file not found. Will use system beep as fallback.');
+            console.log('Please ensure an alarm sound file (alarm.mp3, alarm.wav, or wakeup.mp3) is in the public folder.');
           }}
           onEnded={() => {
             // If audio ends (shouldn't happen with loop, but just in case), restart it if still drowsy
             if (isDrowsy && alarmAudioRef.current) {
-              alarmAudioRef.current.play();
+              alarmAudioRef.current.play().catch(err => {
+                console.log('Error restarting alarm:', err);
+                playSystemBeep();
+              });
             }
           }}
           onPause={() => {
             // If alarm is paused but user is still drowsy, restart it
             if (isDrowsy && alarmAudioRef.current && !alarmAudioRef.current.ended) {
-              alarmAudioRef.current.play();
+              alarmAudioRef.current.play().catch(err => {
+                console.log('Error resuming alarm:', err);
+                playSystemBeep();
+              });
             }
           }}
         >
           <source src="/alarm.mp3" type="audio/mpeg" />
           <source src="/alarm.wav" type="audio/wav" />
+          <source src="/wakeup.mp3" type="audio/mpeg" />
+          <source src="/wakeup.wav" type="audio/wav" />
         </audio>
         
         {/* Visual alarm indicator - shows when alarm is playing */}

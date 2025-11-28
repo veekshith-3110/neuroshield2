@@ -1,4 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { 
+  checkRateLimit,
+  recordLoginAttempt,
+  validateJWTStructure,
+  storeTokens
+} from '../utils/oauthSecurity';
 
 const AuthContext = createContext();
 
@@ -28,86 +34,209 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = (identifier, password) => {
-    // Simple authentication - in production, this would call an API
-    // identifier can be email or phone number
-    const isEmail = identifier.includes('@');
-    const isPhone = /^\+?[1-9]\d{1,14}$/.test(identifier.replace(/[\s\-\(\)]/g, ''));
-    
-    const demoUsers = [
-      { email: 'demo@burnout.com', password: 'demo123', name: 'Demo User', provider: 'email' },
-      { email: 'user@example.com', password: 'password', name: 'Test User', provider: 'email' },
-      { phone: '+1234567890', password: 'demo123', name: 'Demo Phone User', provider: 'phone' }
-    ];
-
-    const foundUser = demoUsers.find(u => 
-      (u.email === identifier || u.phone === identifier) && u.password === password
-    );
-    
-    if (foundUser || (identifier && password)) {
-      const userData = foundUser || {
-        email: isEmail ? identifier : null,
-        phone: isPhone ? identifier : null,
-        name: isEmail ? identifier.split('@')[0] : identifier,
-        id: Date.now().toString(),
-        provider: isEmail ? 'email' : 'phone'
-      };
-      
-      localStorage.setItem('burnoutAppUser', JSON.stringify(userData));
-      setUser(userData);
-      return { success: true };
+  const login = async (identifier, password) => {
+    // OAuth 2.0 Security: Rate limiting
+    const rateLimitCheck = checkRateLimit(identifier);
+    if (!rateLimitCheck.allowed) {
+      return { success: false, error: rateLimitCheck.message };
     }
-    
-    return { success: false, error: 'Invalid email/phone or password' };
-  };
 
-  const signup = (identifier, password, name) => {
-    // identifier can be email or phone number
-    if (identifier && password) {
-      const isEmail = identifier.includes('@');
-      const isPhone = /^\+?[1-9]\d{1,14}$/.test(identifier.replace(/[\s\-\(\)]/g, ''));
-      
-      const userData = {
-        email: isEmail ? identifier : null,
-        phone: isPhone ? identifier : null,
-        name: name || (isEmail ? identifier.split('@')[0] : identifier),
-        id: Date.now().toString(),
-        provider: isEmail ? 'email' : 'phone'
-      };
-      
-      localStorage.setItem('burnoutAppUser', JSON.stringify(userData));
-      setUser(userData);
-      return { success: true };
-    }
-    
-    return { success: false, error: 'Please fill in all fields' };
-  };
-
-  const loginWithGoogle = (credential) => {
     try {
-      // Decode JWT token (simplified - in production, verify on backend)
-      const payload = JSON.parse(atob(credential.split('.')[1]));
+      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+      console.log('🔐 Attempting login to:', `${BACKEND_URL}/api/auth/login`);
+      console.log('📤 Sending:', { identifier, password: '***' });
       
-      const userData = {
-        email: payload.email,
-        name: payload.name || payload.given_name || payload.email.split('@')[0],
-        picture: payload.picture,
-        id: payload.sub,
-        provider: 'google'
-      };
+      const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ identifier, password }),
+      });
+
+      console.log('📥 Response status:', response.status);
+      console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
       
-      localStorage.setItem('burnoutAppUser', JSON.stringify(userData));
-      setUser(userData);
-      return { success: true };
+      // Handle non-JSON responses
+      let data;
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          data = await response.json();
+        } catch (jsonError) {
+          const text = await response.text();
+          console.error('❌ Failed to parse JSON response:', text);
+          return { success: false, error: `Server returned invalid JSON. Status: ${response.status}. Response: ${text.substring(0, 200)}` };
+        }
+      } else {
+        const text = await response.text();
+        console.error('❌ Non-JSON response from login:', text);
+        return { success: false, error: `Server error: ${response.status} ${response.statusText}. ${text.substring(0, 200)}` };
+      }
+      
+      console.log('📥 Response data:', data);
+
+      if (response.ok && data.success) {
+        // Store token and user data
+        if (data.token) {
+          localStorage.setItem('authToken', data.token);
+        }
+        
+        localStorage.setItem('burnoutAppUser', JSON.stringify(data.user));
+        setUser(data.user);
+        
+        // OAuth 2.0 Security: Record successful login
+        recordLoginAttempt(identifier, true);
+        
+        return { success: true };
+      } else {
+        // OAuth 2.0 Security: Record failed login attempt
+        recordLoginAttempt(identifier, false);
+        
+        return { success: false, error: data.error || 'Login failed' };
+      }
+    } catch (error) {
+      console.error('❌ Login error:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
+      recordLoginAttempt(identifier, false);
+      return { success: false, error: `Network error: ${error.message}. Please check if the backend server is running on port 5000.` };
+    }
+  };
+
+  const signup = async (identifier, password, name) => {
+    try {
+      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+      console.log('🔐 Attempting signup to:', `${BACKEND_URL}/api/auth/signup`);
+      console.log('📤 Sending:', { identifier, password: '***', name });
+      
+      const response = await fetch(`${BACKEND_URL}/api/auth/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ identifier, password, name }),
+      });
+
+      console.log('📥 Response status:', response.status);
+      console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
+      
+      // Handle non-JSON responses
+      let data;
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          data = await response.json();
+        } catch (jsonError) {
+          const text = await response.text();
+          console.error('❌ Failed to parse JSON response:', text);
+          return { success: false, error: `Server returned invalid JSON. Status: ${response.status}. Response: ${text.substring(0, 200)}` };
+        }
+      } else {
+        const text = await response.text();
+        console.error('❌ Non-JSON response from signup:', text);
+        return { success: false, error: `Server error: ${response.status} ${response.statusText}. ${text.substring(0, 200)}` };
+      }
+      
+      console.log('📥 Response data:', data);
+
+      console.log('📊 Response analysis:', {
+        ok: response.ok,
+        status: response.status,
+        hasSuccess: !!data.success,
+        hasError: !!data.error,
+        hasUser: !!data.user,
+        hasToken: !!data.token
+      });
+
+      if (response.ok && data.success) {
+        // Store token and user data
+        if (data.token) {
+          localStorage.setItem('authToken', data.token);
+          console.log('✅ Token stored');
+        }
+        
+        if (data.user) {
+          localStorage.setItem('burnoutAppUser', JSON.stringify(data.user));
+          setUser(data.user);
+          console.log('✅ User data stored:', data.user);
+        }
+        
+        return { success: true };
+      } else {
+        const errorMessage = data.error || data.message || `Signup failed (Status: ${response.status})`;
+        console.error('❌ Signup failed:', errorMessage);
+        return { success: false, error: errorMessage };
+      }
+    } catch (error) {
+      console.error('❌ Signup error:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
+      return { success: false, error: `Network error: ${error.message}. Please check if the backend server is running on port 5000.` };
+    }
+  };
+
+
+  const loginWithGoogle = async (credential) => {
+    try {
+      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+      const response = await fetch(`${BACKEND_URL}/api/auth/google`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ credential }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Store token and user data
+        if (data.token) {
+          localStorage.setItem('authToken', data.token);
+        }
+        
+        localStorage.setItem('burnoutAppUser', JSON.stringify(data.user));
+        setUser(data.user);
+        
+        // OAuth 2.0 Security: Record successful login
+        if (data.user.email) {
+          recordLoginAttempt(data.user.email, true);
+        }
+        
+        return { success: true };
+      } else {
+        if (data.user?.email) {
+          recordLoginAttempt(data.user.email, false);
+        }
+        return { success: false, error: data.error || 'Google login failed' };
+      }
     } catch (error) {
       console.error('Error processing Google login:', error);
-      return { success: false, error: 'Failed to process Google login' };
+      return { success: false, error: 'Network error. Please check your connection.' };
     }
   };
 
   const logout = () => {
     localStorage.removeItem('burnoutAppUser');
     setUser(null);
+  };
+
+  const updateUser = (updatedUserData) => {
+    const currentUser = JSON.parse(localStorage.getItem('burnoutAppUser') || '{}');
+    const updatedUser = {
+      ...currentUser,
+      ...updatedUserData
+    };
+    localStorage.setItem('burnoutAppUser', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    return { success: true };
   };
 
   return (
@@ -118,6 +247,7 @@ export const AuthProvider = ({ children }) => {
         signup,
         loginWithGoogle,
         logout,
+        updateUser,
         loading,
         isAuthenticated: !!user
       }}

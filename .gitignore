@@ -25,4 +25,11 @@ yarn-error.log*
 
 # Backend
 server/node_modules
+backend/node_modules
 *.log
+
+# JDK (too large and has long paths)
+jdk/
+
+# IDE
+.vscode/

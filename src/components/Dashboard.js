@@ -1,12 +1,70 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { getHealthMessage } from '../utils/riskCalculator';
+import { getHealthSummary } from '../utils/healthDataService';
+import { calculateEnergyLevel, getEnergyRecommendations } from '../utils/energyLevelCalculator';
 
 const Dashboard = () => {
   const { data, getTodayLog, getRecentLogs } = useApp();
+  const { user } = useAuth();
   const todayLog = getTodayLog();
   const recentLogs = getRecentLogs(7);
+  
+  // Health data from Android
+  const [healthData, setHealthData] = useState({
+    steps: null,
+    heartRate: null,
+    loading: true,
+    lastUpdated: null
+  });
+
+  // Energy level
+  const [energyLevel, setEnergyLevel] = useState(null);
+
+  // Fetch health data from Android and calculate energy level
+  useEffect(() => {
+    const fetchHealthData = async () => {
+      try {
+        const userId = user?.email || user?.phone || 'log';
+        const summary = await getHealthSummary(userId);
+        
+        const healthDataUpdate = {
+          steps: summary.todaySteps || summary.latestSteps || 0,
+          heartRate: summary.todayLatestHeartRate || summary.latestHeartRate,
+          loading: false,
+          lastUpdated: new Date(summary.latestTimestamp || Date.now())
+        };
+        
+        setHealthData(healthDataUpdate);
+        
+        // Calculate energy level
+        const energy = calculateEnergyLevel(
+          healthDataUpdate,
+          todayLog?.sleep,
+          todayLog
+        );
+        setEnergyLevel(energy);
+      } catch (error) {
+        console.warn('Could not fetch health data:', error);
+        setHealthData(prev => ({ ...prev, loading: false }));
+        // Calculate energy level with available data
+        const energy = calculateEnergyLevel(
+          { steps: null, heartRate: null },
+          todayLog?.sleep,
+          todayLog
+        );
+        setEnergyLevel(energy);
+      }
+    };
+
+    fetchHealthData();
+    
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchHealthData, 30000);
+    return () => clearInterval(interval);
+  }, [user, todayLog]);
 
   // Prepare data for line chart
   const chartData = recentLogs.map(log => ({
@@ -94,6 +152,91 @@ const Dashboard = () => {
                 <p className="text-xs text-gray-600">Mood</p>
               </div>
             </div>
+
+            {/* Energy Level */}
+            {energyLevel && (
+              <div className="mt-4 p-4 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg border-2 border-yellow-200">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                  ⚡ Energy Level
+                </h3>
+                <div className="mb-3">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-gray-600">Current Energy</span>
+                    <span 
+                      className="text-3xl font-bold"
+                      style={{ color: energyLevel.color }}
+                    >
+                      {energyLevel.level}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-4">
+                    <div
+                      className="h-4 rounded-full transition-all duration-500"
+                      style={{ 
+                        width: `${energyLevel.level}%`,
+                        backgroundColor: energyLevel.color
+                      }}
+                    ></div>
+                  </div>
+                  <p className="text-sm font-semibold mt-2" style={{ color: energyLevel.color }}>
+                    {energyLevel.category} Energy
+                  </p>
+                </div>
+                
+                {/* Energy Recommendations */}
+                <div className="mt-3 pt-3 border-t border-yellow-300">
+                  <p className="text-xs font-medium text-gray-700 mb-2">Recommendations:</p>
+                  <ul className="text-xs text-gray-600 space-y-1">
+                    {getEnergyRecommendations(energyLevel).map((rec, idx) => (
+                      <li key={idx}>{rec}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {/* Health Data from Android */}
+            {(healthData.steps || healthData.heartRate) && (
+              <div className="mt-4 p-4 bg-gradient-to-br from-green-50 to-blue-50 rounded-lg border-2 border-green-200">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                  📱 Live Health Data from Your Phone
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white rounded-lg p-3 shadow-sm">
+                    <p className="text-xs text-gray-600 mb-1">Steps Today</p>
+                    <p className="text-2xl font-bold text-green-600">
+                      {healthData.steps?.toLocaleString() || '--'}
+                    </p>
+                    {healthData.steps && (
+                      <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+                        <div 
+                          className="bg-green-500 h-1.5 rounded-full"
+                          style={{ width: `${Math.min(100, ((healthData.steps || 0) / 10000) * 100)}%` }}
+                        ></div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="bg-white rounded-lg p-3 shadow-sm">
+                    <p className="text-xs text-gray-600 mb-1">Heart Rate</p>
+                    <p className="text-2xl font-bold text-red-600">
+                      {healthData.heartRate ? `${healthData.heartRate} bpm` : '--'}
+                    </p>
+                    {healthData.heartRate && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        {healthData.heartRate < 60 ? 'Resting' : 
+                         healthData.heartRate < 100 ? 'Normal' : 
+                         healthData.heartRate < 140 ? 'Active' : 'High'}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                {healthData.lastUpdated && (
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    Last updated: {new Date(healthData.lastUpdated).toLocaleTimeString()}
+                  </p>
+                )}
+              </div>
+            )}
           </>
         ) : (
           <p className="text-gray-500">Complete your daily check-in to see your health status!</p>

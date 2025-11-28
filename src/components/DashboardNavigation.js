@@ -1,119 +1,147 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import './DashboardNavigation.css';
 
 const DashboardNavigation = ({ activeSection, setActiveSection }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [clickedCard, setClickedCard] = useState(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  
+  // Determine active section from URL if not provided
+  const getActiveSectionFromPath = () => {
+    if (activeSection) return activeSection;
+    const path = location.pathname;
+    if (path === '/dashboard/anti-doze' || path.includes('/anti-doze')) return 'anti-doze';
+    if (path === '/dashboard/stress' || path.includes('/stress')) return 'stress';
+    if (path === '/dashboard/screen-time' || path.includes('/screen-time')) return 'screen-time';
+    if (path === '/dashboard/daily-log' || path.includes('/daily-log')) return 'daily-log';
+    if (path === '/dashboard/dashboard') return 'dashboard';
+    if (path === '/dashboard/recommendations' || path.includes('/recommendations')) return 'recommendations';
+    if (path === '/dashboard/ai-mentor' || path.includes('/ai-mentor')) return 'ai-mentor';
+    if (path === '/dashboard/nearby-doctors' || path.includes('/nearby-doctors')) return 'nearby-doctors';
+    if (path === '/dashboard/records' || path.includes('/records')) return 'records';
+    return '';
+  };
+  
+  const currentActiveSection = getActiveSectionFromPath();
+  
+  const handleCardClick = (sectionId, itemId) => {
+    // Prevent multiple clicks during animation
+    if (isAnimating) return;
+    
+    setIsAnimating(true);
+    setClickedCard(itemId);
+    
+    // Wait for animation to complete before navigating
+    setTimeout(() => {
+      if (sectionId === 'dashboard') {
+        navigate('/dashboard/dashboard', { replace: false });
+      } else {
+        navigate(`/dashboard/${sectionId}`, { replace: false });
+      }
+      
+      // Reset animation state after navigation
+      setTimeout(() => {
+        setClickedCard(null);
+        setIsAnimating(false);
+      }, 300);
+    }, 400); // Match animation duration
+  };
   const menuItems = [
-    {
-      id: 'screen-time',
-      icon: '📊',
-      label: 'Screen Time',
-      color: 'primary',
-      bgColor: '#0d6efd'
-    },
-    {
-      id: 'stress',
-      icon: '😟',
-      label: 'Stress Detection',
-      color: 'danger',
-      bgColor: '#dc3545'
-    },
-    {
-      id: 'anti-doze',
-      icon: '😴',
-      label: 'Anti-Doze',
-      color: 'warning',
-      bgColor: '#ffc107'
-    },
     {
       id: 'daily-log',
       icon: '📝',
       label: 'Daily Log',
-      color: 'info',
-      bgColor: '#0dcaf0'
+      description: 'Record your daily wellness and track your progress',
+      class: 'daily-log'
     },
     {
       id: 'dashboard',
       icon: '📈',
       label: 'Health Dashboard',
-      color: 'success',
-      bgColor: '#198754'
+      description: 'View comprehensive health metrics and analytics',
+      class: 'dashboard'
     },
     {
       id: 'recommendations',
       icon: '💡',
       label: 'Recommendations',
-      color: 'secondary',
-      bgColor: '#6c757d'
+      description: 'Get personalized wellness tips and suggestions',
+      class: 'recommendations'
+    },
+    {
+      id: 'ai-mentor',
+      icon: '🤖',
+      label: 'AI Mentor',
+      description: 'Chat with your Gen Z wellness mentor for support',
+      class: 'ai-mentor'
+    },
+    {
+      id: 'nearby-doctors',
+      icon: '🏥',
+      label: 'Nearby Doctors',
+      description: 'Find nearby healthcare providers and get directions',
+      class: 'nearby-doctors'
+    },
+    {
+      id: 'records',
+      icon: '📋',
+      label: 'My Records',
+      description: 'Add and manage your personal records stored in your Google account',
+      class: 'records'
+    },
+    {
+      id: 'screen-time',
+      icon: '📊',
+      label: 'Screen Time',
+      description: 'Track your daily screen time and monitor usage patterns',
+      class: 'screen-time'
+    },
+    {
+      id: 'stress',
+      icon: '😟',
+      label: 'Stress Detection',
+      description: 'Real-time stress level monitoring using facial analysis',
+      class: 'stress'
+    },
+    {
+      id: 'anti-doze',
+      icon: '😴',
+      label: 'Anti-Doze',
+      description: 'Stay alert with drowsiness detection and wake-up alerts',
+      class: 'anti-doze'
     }
   ];
 
   return (
-    <div className="card shadow-lg mb-4 border-0">
-      <div className="card-body p-3">
-        <div className="d-flex flex-wrap justify-content-center align-items-center gap-3">
-          {menuItems.map((item) => {
-            const isActive = activeSection === item.id;
-            return (
-              <button
-                key={item.id}
-                className={`btn ${isActive ? `btn-${item.color}` : 'btn-outline-secondary'} position-relative`}
-                onClick={() => setActiveSection(item.id)}
-                style={{
-                  minWidth: '140px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '15px 20px',
-                  borderRadius: '12px',
-                  border: isActive ? `2px solid ${item.bgColor}` : '2px solid #dee2e6',
-                  transition: 'all 0.3s ease',
-                  transform: isActive ? 'scale(1.05)' : 'scale(1)',
-                  boxShadow: isActive ? `0 4px 12px rgba(0,0,0,0.15)` : 'none',
-                  backgroundColor: isActive ? item.bgColor : 'white',
-                  color: isActive ? 'white' : '#6c757d'
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.backgroundColor = '#f8f9fa';
-                    e.currentTarget.style.borderColor = item.bgColor;
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.backgroundColor = 'white';
-                    e.currentTarget.style.borderColor = '#dee2e6';
-                  }
-                }}
-                title={item.label}
-              >
-                <span style={{ fontSize: '2rem', lineHeight: '1' }}>{item.icon}</span>
-                <span 
-                  style={{ 
-                    fontSize: '0.9rem', 
-                    fontWeight: isActive ? '600' : '500',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  {item.label}
-                </span>
-                {isActive && (
-                  <span 
-                    className="position-absolute top-0 start-50 translate-middle badge rounded-pill"
-                    style={{
-                      backgroundColor: item.bgColor,
-                      fontSize: '0.6rem',
-                      padding: '2px 6px'
-                    }}
-                  >
-                    ●
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+    <div className="dashboard-nav-container">
+      {menuItems.map((item) => {
+        const isActive = currentActiveSection === item.id;
+        const isClicked = clickedCard === item.id;
+        return (
+          <div
+            key={item.id}
+            className={`nav-card-parent ${isActive ? 'active' : ''} ${isClicked ? 'clicked' : ''}`}
+            onClick={() => handleCardClick(item.id, item.id)}
+          >
+            <div className={`nav-card ${item.class} ${isActive ? 'active' : ''} ${isClicked ? 'clicked' : ''}`}>
+              <div className="nav-card-logo">
+                <span className="nav-circle nav-circle1"></span>
+                <span className="nav-circle nav-circle2"></span>
+                <span className="nav-circle nav-circle3"></span>
+                <span className="nav-circle nav-circle4"></span>
+                <span className="nav-circle nav-circle5"></span>
+              </div>
+
+              <div className="nav-card-content">
+                <span className="nav-title">{item.label}</span>
+                <span className="nav-text">{item.description}</span>
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

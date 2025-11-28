@@ -1,0 +1,172 @@
+/**
+ * Bouncy Block Clock Styles
+ * Positioned in bottom-right corner, reduced size
+ */
+
+.bouncy-clock-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  pointer-events: none; /* Allow clicks to pass through */
+}
+
+.bouncy-clock-container .clock {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  transform: scale(0.7); /* Reduced size to 70% */
+  transform-origin: bottom right;
+}
+
+.bouncy-clock-container .clock__block {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1rem 2rem hsla(223, 90%, 50%, 0.5), 0 0 20px rgba(102, 126, 234, 0.4);
+  font-size: 2.1em; /* Reduced from 3em */
+  font-weight: 700;
+  line-height: 2;
+  margin: 0.5rem; /* Reduced from 0.75rem */
+  overflow: hidden;
+  text-align: center;
+  width: 4.2rem; /* Reduced from 6rem */
+  height: 4.2rem; /* Reduced from 6rem */
+  transition:
+    background 0.3s,
+    box-shadow 0.3s;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.bouncy-clock-container .clock__block--small {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: #ffffff;
+  border-radius: 0.25rem;
+  box-shadow: 0 0.5rem 2rem hsla(223, 90%, 50%, 0.5), 0 0 15px rgba(245, 87, 108, 0.4);
+  font-size: 0.7em; /* Reduced from 1em */
+  font-weight: 700;
+  line-height: 3;
+  width: 2.1rem; /* Reduced from 3rem */
+  height: 2.1rem; /* Reduced from 3rem */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.bouncy-clock-container .clock__colon {
+  display: none;
+  font-size: 1.4em; /* Reduced from 2em */
+  opacity: 0.8;
+  position: relative;
+  color: #667eea;
+}
+
+.bouncy-clock-container .clock__colon:before,
+.bouncy-clock-container .clock__colon:after {
+  background-color: currentColor;
+  border-radius: 50%;
+  content: "";
+  display: block;
+  position: absolute;
+  top: -0.05em;
+  left: -0.05em;
+  width: 0.1em;
+  height: 0.1em;
+  transition: background-color 0.3s;
+}
+
+.bouncy-clock-container .clock__colon:before {
+  transform: translateY(-200%);
+}
+
+.bouncy-clock-container .clock__colon:after {
+  transform: translateY(200%);
+}
+
+.bouncy-clock-container .clock__digit-group {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.bouncy-clock-container .clock__digits {
+  width: 100%;
+  height: 100%;
+}
+
+.bouncy-clock-container .clock__block--bounce {
+  animation: bounce-clock 0.75s;
+}
+
+.bouncy-clock-container .clock__block--bounce .clock__digit-group {
+  animation: roll-clock 0.75s ease-in-out forwards;
+  transform: translateY(-50%);
+}
+
+.bouncy-clock-container .clock__block--delay1,
+.bouncy-clock-container .clock__block--delay1 .clock__digit-group {
+  animation-delay: 0.1s;
+}
+
+.bouncy-clock-container .clock__block--delay2,
+.bouncy-clock-container .clock__block--delay2 .clock__digit-group {
+  animation-delay: 0.2s;
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .bouncy-clock-container .clock__block {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 1rem 2rem hsla(223, 90%, 60%, 0.6), 0 0 25px rgba(102, 126, 234, 0.5);
+  }
+  .bouncy-clock-container .clock__block--small {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 0.5rem 2rem hsla(223, 90%, 60%, 0.6), 0 0 20px rgba(245, 87, 108, 0.5);
+  }
+  .bouncy-clock-container .clock__colon {
+    color: #f093fb;
+  }
+}
+
+/* Horizontal layout for larger screens */
+@media (min-width: 768px) {
+  .bouncy-clock-container .clock {
+    flex-direction: row;
+  }
+  .bouncy-clock-container .clock__colon {
+    display: inherit;
+  }
+}
+
+/* Animations */
+@keyframes bounce-clock {
+  from,
+  to {
+    animation-timing-function: ease-in;
+    transform: translateY(0);
+  }
+  50% {
+    animation-timing-function: ease-out;
+    transform: translateY(15%);
+  }
+}
+
+@keyframes roll-clock {
+  from {
+    transform: translateY(-50%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bouncy-clock-container {
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  .bouncy-clock-container .clock {
+    transform: scale(0.6); /* Even smaller on mobile */
+  }
+}
+

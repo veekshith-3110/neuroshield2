@@ -15,8 +15,13 @@ export function calculateRisk({ sleep, screenTime, mood }) {
   // Screen time risk
   if (screenTime > 6) risk += 2;
 
-  // Mood-related risk
+  // Mood-related risk - More granular stress levels
+  if (mood === 'Critical Distress / Crying') risk += 5; // Highest risk
+  if (mood === 'Severe Stress') risk += 4.5;
+  if (mood === 'Highly Stressed') risk += 4;
+  if (mood === 'Moderate-High Stress') risk += 3.5;
   if (mood === 'Stressed') risk += 3;
+  if (mood === 'Anxious' || mood === 'Overwhelmed') risk += 2.5;
   if (mood === 'Tired') risk += 2;
 
   // Determine status

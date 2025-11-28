@@ -1,19 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import DailyLogForm from '../components/DailyLogForm';
-import DashboardComponent from '../components/Dashboard';
-import Recommendations from '../components/Recommendations';
-import ScreenTimeMonitor from '../components/ScreenTimeMonitor';
-import StressDetection from '../components/StressDetection';
-import AntiDoze from '../components/AntiDoze';
 import DashboardNavigation from '../components/DashboardNavigation';
-import FaceDetectionDebug from '../components/FaceDetectionDebug';
+import AnimatedLogoutButton from '../components/AnimatedLogoutButton';
+import ProfileIcon from '../components/ProfileIcon';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState('screen-time');
 
   const handleLogout = () => {
     logout();
@@ -43,44 +37,42 @@ const Dashboard = () => {
               </p>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors"
-          >
-            Logout
-          </button>
+          <div className="flex items-center gap-2">
+            <ProfileIcon />
+            <AnimatedLogoutButton onLogout={handleLogout} />
+          </div>
         </header>
 
         {/* Navigation Menu */}
-        <DashboardNavigation 
-          activeSection={activeSection} 
-          setActiveSection={setActiveSection} 
-        />
+        <DashboardNavigation />
 
-        {/* Main Content - Show only active section with animation */}
-        <div className="space-y-6" style={{ minHeight: '400px' }}>
-          <div
-            key={activeSection}
-            style={{
-              animation: 'fadeIn 0.3s ease-in'
-            }}
-          >
-            {activeSection === 'screen-time' && <ScreenTimeMonitor />}
-            {activeSection === 'stress' && (
-              <>
-                <FaceDetectionDebug />
-                <StressDetection />
-              </>
-            )}
-            {activeSection === 'anti-doze' && (
-              <>
-                <FaceDetectionDebug />
-                <AntiDoze />
-              </>
-            )}
-            {activeSection === 'daily-log' && <DailyLogForm />}
-            {activeSection === 'dashboard' && <DashboardComponent />}
-            {activeSection === 'recommendations' && <Recommendations />}
+        {/* Welcome Message */}
+        <div className="mt-12 text-center">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">
+              Welcome to Neuroshield! 🎉
+            </h2>
+            <p className="text-gray-600 text-lg mb-6">
+              Select a feature from the cards above to get started. Each feature has its own dedicated page for the best experience.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h3 className="font-semibold text-blue-800 mb-2">📊 Screen Time</h3>
+                <p className="text-sm text-gray-600">Track your daily screen usage</p>
+              </div>
+              <div className="p-4 bg-red-50 rounded-lg">
+                <h3 className="font-semibold text-red-800 mb-2">😟 Stress Detection</h3>
+                <p className="text-sm text-gray-600">Monitor stress levels in real-time</p>
+              </div>
+              <div className="p-4 bg-yellow-50 rounded-lg">
+                <h3 className="font-semibold text-yellow-800 mb-2">😴 Anti-Doze</h3>
+                <p className="text-sm text-gray-600">Stay alert with drowsiness detection</p>
+              </div>
+              <div className="p-4 bg-green-50 rounded-lg">
+                <h3 className="font-semibold text-green-800 mb-2">📝 Daily Log</h3>
+                <p className="text-sm text-gray-600">Record your wellness daily</p>
+              </div>
+            </div>
           </div>
         </div>
 

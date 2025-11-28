@@ -154,20 +154,103 @@ const StressDetection = () => {
   }, [modelsLoaded, isDetecting]);
 
   const calculateStressLevel = (expressions) => {
+    // Increased weights for negative emotions, especially sadness (crying)
     let stressScore =
-      expressions.angry * 3 +
-      expressions.fearful * 2.5 +
-      expressions.sad * 2 +
-      expressions.disgusted * 1.5 +
-      expressions.neutral * 1;
+      expressions.angry * 4 +           // Increased from 3
+      expressions.fearful * 3.5 +        // Increased from 2.5
+      expressions.sad * 4.5 +            // Increased from 2 - crying is now weighted much higher
+      expressions.disgusted * 2.5 +      // Increased from 1.5
+      expressions.neutral * 0.5;         // Decreased from 1
 
-    if (stressScore > 2.5) {
-      return { level: 'High', status: '⚠️ Highly Stressed', color: 'red', score: stressScore };
-    } else if (stressScore > 1.5) {
-      return { level: 'Moderate', status: '😟 Moderate Stress', color: 'orange', score: stressScore };
-    } else {
-      return { level: 'Low', status: '😊 Relaxed', color: 'green', score: stressScore };
+    // Special detection for crying: very high sadness combined with fear or anger
+    const isCrying = expressions.sad > 0.7 && (expressions.fearful > 0.3 || expressions.angry > 0.3);
+    const isSevereCrying = expressions.sad > 0.85;
+    
+    // Critical level - Severe crying or extreme distress
+    if (isSevereCrying || stressScore > 4.5) {
+      return { 
+        level: 'Critical', 
+        status: '😭 Critical Distress - Severe Crying Detected', 
+        color: '#8B0000', // Dark red
+        score: stressScore,
+        emoji: '😭'
+      };
     }
+    
+    // Severe level - Crying or very high stress
+    if (isCrying || stressScore > 3.5) {
+      return { 
+        level: 'Severe', 
+        status: '😢 Severe Stress - Crying Detected', 
+        color: '#DC143C', // Crimson
+        score: stressScore,
+        emoji: '😢'
+      };
+    }
+    
+    // High level
+    if (stressScore > 2.5) {
+      return { 
+        level: 'High', 
+        status: '⚠️ Highly Stressed', 
+        color: '#FF0000', // Red
+        score: stressScore,
+        emoji: '⚠️'
+      };
+    }
+    
+    // Moderate-High level (new intermediate level)
+    if (stressScore > 1.8) {
+      return { 
+        level: 'Moderate-High', 
+        status: '😰 Moderate-High Stress', 
+        color: '#FF6347', // Tomato red
+        score: stressScore,
+        emoji: '😰'
+      };
+    }
+    
+    // Moderate level
+    if (stressScore > 1.2) {
+      return { 
+        level: 'Moderate', 
+        status: '😟 Moderate Stress', 
+        color: '#FF8C00', // Dark orange
+        score: stressScore,
+        emoji: '😟'
+      };
+    }
+    
+    // Low-Moderate level (new intermediate level)
+    if (stressScore > 0.8) {
+      return { 
+        level: 'Low-Moderate', 
+        status: '😐 Low-Moderate Stress', 
+        color: '#FFA500', // Orange
+        score: stressScore,
+        emoji: '😐'
+      };
+    }
+    
+    // Low level
+    if (stressScore > 0.4) {
+      return { 
+        level: 'Low', 
+        status: '🙂 Low Stress', 
+        color: '#FFD700', // Gold
+        score: stressScore,
+        emoji: '🙂'
+      };
+    }
+    
+    // Very Low / Relaxed
+    return { 
+      level: 'Relaxed', 
+      status: '😊 Relaxed', 
+      color: '#32CD32', // Lime green
+      score: stressScore,
+      emoji: '😊'
+    };
   };
 
   const stopDetection = () => {
@@ -191,17 +274,41 @@ const StressDetection = () => {
           <div
             className="alert"
             style={{
-              backgroundColor: stressLevel.color === 'red' ? '#f8d7da' :
-                              stressLevel.color === 'orange' ? '#fff3cd' :
-                              stressLevel.color === 'green' ? '#d1e7dd' : '#e2e3e5',
-              color: stressLevel.color === 'red' ? '#721c24' :
-                     stressLevel.color === 'orange' ? '#856404' :
-                     stressLevel.color === 'green' ? '#0f5132' : '#383d41',
-              fontSize: '1.2rem',
-              fontWeight: 'bold'
+              backgroundColor: stressLevel.color === '#8B0000' ? '#8B0000' : // Critical - dark red bg
+                              stressLevel.color === '#DC143C' ? '#DC143C' : // Severe - crimson bg
+                              stressLevel.color === '#FF0000' ? '#f8d7da' : // High - light red bg
+                              stressLevel.color === '#FF6347' ? '#ffe4e1' : // Moderate-High - misty rose bg
+                              stressLevel.color === '#FF8C00' ? '#fff3cd' : // Moderate - light orange bg
+                              stressLevel.color === '#FFA500' ? '#fff8dc' : // Low-Moderate - cornsilk bg
+                              stressLevel.color === '#FFD700' ? '#fffacd' : // Low - lemon chiffon bg
+                              stressLevel.color === '#32CD32' ? '#d1e7dd' : // Relaxed - light green bg
+                              '#e2e3e5', // Default gray
+              color: stressLevel.color === '#8B0000' || stressLevel.color === '#DC143C' ? '#ffffff' : // White text for critical/severe
+                     stressLevel.color === '#FF0000' ? '#721c24' : // Dark red text
+                     stressLevel.color === '#FF6347' ? '#8B0000' : // Dark red text
+                     stressLevel.color === '#FF8C00' ? '#856404' : // Dark orange text
+                     stressLevel.color === '#FFA500' ? '#8B4513' : // Saddle brown text
+                     stressLevel.color === '#FFD700' ? '#8B6914' : // Dark goldenrod text
+                     stressLevel.color === '#32CD32' ? '#0f5132' : // Dark green text
+                     '#383d41', // Default dark gray
+              fontSize: '1.3rem',
+              fontWeight: 'bold',
+              padding: '1rem',
+              borderRadius: '10px',
+              border: stressLevel.level === 'Critical' || stressLevel.level === 'Severe' ? '3px solid #ffffff' : '2px solid currentColor',
+              boxShadow: stressLevel.level === 'Critical' || stressLevel.level === 'Severe' ? '0 0 20px rgba(139, 0, 0, 0.5)' : 'none'
             }}
           >
-            Stress Level: {stressLevel.level} - {stressLevel.status}
+            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
+              {stressLevel.emoji || '😐'}
+            </div>
+            <div>Stress Level: <strong>{stressLevel.level}</strong></div>
+            <div style={{ fontSize: '1rem', marginTop: '0.5rem' }}>{stressLevel.status}</div>
+            {stressLevel.score !== undefined && (
+              <div style={{ fontSize: '0.9rem', marginTop: '0.5rem', opacity: 0.8 }}>
+                Score: {stressLevel.score.toFixed(2)}
+              </div>
+            )}
           </div>
         </div>
 
