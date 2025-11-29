@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: neuroshield-frontend
+    env: node
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    envVars:
+      - key: NODE_VERSION
+        value: 18.18.0
+      - key: NPM_VERSION
+        value: 9.8.1
+      - key: REACT_APP_BACKEND_URL
+        sync: false
+      - key: REACT_APP_GOOGLE_CLIENT_ID
+        sync: false
+

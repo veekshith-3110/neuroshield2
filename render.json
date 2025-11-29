@@ -1,0 +1,17 @@
+{
+  "name": "neuroshield-frontend",
+  "env": "node",
+  "buildCommand": "npm install && npm run build",
+  "staticPublishPath": "build",
+  "envVars": [
+    {
+      "key": "NODE_VERSION",
+      "value": "18.18.0"
+    },
+    {
+      "key": "NPM_VERSION",
+      "value": "9.8.1"
+    }
+  ]
+}
+
