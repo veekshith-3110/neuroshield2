@@ -11,22 +11,39 @@ dotenv.config();
 const app = express();
 
 // CORS and body parser - MUST be before security headers and routes
+// Get allowed origins from environment or use defaults
+const getAllowedOrigins = () => {
+  const envOrigins = process.env.ALLOWED_ORIGINS;
+  if (envOrigins) {
+    return envOrigins.split(',').map(origin => origin.trim());
+  }
+  // Default origins for development
+  return [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001'
+  ];
+};
+
+const allowedOrigins = getAllowedOrigins();
+
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://127.0.0.1:3000',
-      'http://127.0.0.1:3001'
-    ];
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
+    // In production, check against allowed origins
+    // In development, allow all
+    if (process.env.NODE_ENV === 'production') {
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
     } else {
-      callback(null, true); // Allow all for development
+      // Development: allow all origins
+      callback(null, true);
     }
   },
   credentials: true,
@@ -40,17 +57,17 @@ app.use(cors({
 // Handle all OPTIONS requests globally
 app.options('*', (req, res) => {
   const origin = req.headers.origin;
-  const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:3001'
-  ];
+  const allowed = getAllowedOrigins();
   
-  if (origin && allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
+  if (process.env.NODE_ENV === 'production') {
+    if (origin && allowed.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+    } else {
+      return res.status(403).json({ error: 'CORS policy violation' });
+    }
   } else {
-    res.header('Access-Control-Allow-Origin', '*');
+    // Development: allow all
+    res.header('Access-Control-Allow-Origin', origin || '*');
   }
   
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');

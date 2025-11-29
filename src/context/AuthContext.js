@@ -258,6 +258,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('burnoutAppGuest', 'true');
     setUser(guestUser);
     setIsGuest(true);
+    // Guest mode works completely offline - no backend needed
     return { success: true };
   };
 
