@@ -11,7 +11,9 @@
     }
   ],
   "env": {
-    "CI": "false"
-  }
+    "CI": "false",
+    "NODE_OPTIONS": "--no-deprecation"
+  },
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./"
 }
 
