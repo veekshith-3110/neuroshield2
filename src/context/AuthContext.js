@@ -17,17 +17,31 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isGuest, setIsGuest] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in on mount
     const storedUser = localStorage.getItem('burnoutAppUser');
+    const storedGuest = localStorage.getItem('burnoutAppGuest');
+    
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
+        setIsGuest(false);
       } catch (error) {
         console.error('Error parsing user data:', error);
         localStorage.removeItem('burnoutAppUser');
       }
+    } else if (storedGuest === 'true') {
+      // Create guest user
+      const guestUser = {
+        id: 'guest_' + Date.now(),
+        email: 'guest@neuroshield.app',
+        name: 'Guest User',
+        isGuest: true
+      };
+      setUser(guestUser);
+      setIsGuest(true);
     }
     setLoading(false);
   }, []);
@@ -75,6 +89,10 @@ export const AuthProvider = ({ children }) => {
       console.log('📥 Response data:', data);
 
       if (response.ok && data.success) {
+        // Clear guest status if logging in with real account
+        localStorage.removeItem('burnoutAppGuest');
+        setIsGuest(false);
+        
         // Store token and user data
         if (data.token) {
           localStorage.setItem('authToken', data.token);
@@ -151,6 +169,10 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (response.ok && data.success) {
+        // Clear guest status if signing up with real account
+        localStorage.removeItem('burnoutAppGuest');
+        setIsGuest(false);
+        
         // Store token and user data
         if (data.token) {
           localStorage.setItem('authToken', data.token);
@@ -195,6 +217,10 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
 
       if (response.ok && data.success) {
+        // Clear guest status if logging in with Google
+        localStorage.removeItem('burnoutAppGuest');
+        setIsGuest(false);
+        
         // Store token and user data
         if (data.token) {
           localStorage.setItem('authToken', data.token);
@@ -221,9 +247,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginAsGuest = () => {
+    const guestUser = {
+      id: 'guest_' + Date.now(),
+      email: 'guest@neuroshield.app',
+      name: 'Guest User',
+      isGuest: true
+    };
+    localStorage.setItem('burnoutAppUser', JSON.stringify(guestUser));
+    localStorage.setItem('burnoutAppGuest', 'true');
+    setUser(guestUser);
+    setIsGuest(true);
+    return { success: true };
+  };
+
   const logout = () => {
     localStorage.removeItem('burnoutAppUser');
+    localStorage.removeItem('burnoutAppGuest');
+    localStorage.removeItem('authToken');
     setUser(null);
+    setIsGuest(false);
   };
 
   const updateUser = (updatedUserData) => {
@@ -244,10 +287,12 @@ export const AuthProvider = ({ children }) => {
         login,
         signup,
         loginWithGoogle,
+        loginAsGuest,
         logout,
         updateUser,
         loading,
-        isAuthenticated: !!user
+        isAuthenticated: !!user,
+        isGuest
       }}
     >
       {children}

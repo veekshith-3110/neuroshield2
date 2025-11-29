@@ -250,6 +250,48 @@
   margin-top: 15px;
 }
 
+.guest-login-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.guest-login-button {
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 40px;
+  cursor: pointer;
+  font-size: 0.95em;
+  color: #fff;
+  font-weight: 500;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guest-login-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+}
+
+.guest-login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.guest-note {
+  font-size: 0.75em;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 8px;
+  text-align: center;
+}
+
 @media (max-width: 500px) {
   .login-box {
     width: 100%;

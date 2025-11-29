@@ -19,9 +19,8 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+  // Allow access even without authentication (guest mode)
+  // Users can still login if they want to save data
 
   return (
     <>

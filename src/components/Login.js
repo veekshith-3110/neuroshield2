@@ -15,7 +15,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { login, signup, loginWithGoogle } = useAuth();
+  const { login, signup, loginWithGoogle, loginAsGuest } = useAuth();
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -111,6 +111,13 @@ const Login = () => {
     setError('Google login was cancelled or failed.');
   };
 
+  const handleGuestLogin = () => {
+    const result = loginAsGuest();
+    if (result.success) {
+      navigate('/dashboard');
+    }
+  };
+
   return (
     <div className="login-wrapper">
       <div className="login-box">
@@ -202,6 +209,19 @@ const Login = () => {
                   shape="rectangular"
                   logo_alignment="left"
                 />
+              </div>
+              <div className="guest-login-wrapper" style={{ marginTop: '15px' }}>
+                <button
+                  type="button"
+                  className="guest-login-button"
+                  onClick={handleGuestLogin}
+                  disabled={loading}
+                >
+                  Continue as Guest
+                </button>
+                <p className="guest-note" style={{ fontSize: '0.75em', color: 'rgba(255,255,255,0.7)', marginTop: '8px', textAlign: 'center' }}>
+                  Explore without an account
+                </p>
               </div>
             </div>
           </form>
@@ -295,6 +315,19 @@ const Login = () => {
                   shape="rectangular"
                   logo_alignment="left"
                 />
+              </div>
+              <div className="guest-login-wrapper" style={{ marginTop: '15px' }}>
+                <button
+                  type="button"
+                  className="guest-login-button"
+                  onClick={handleGuestLogin}
+                  disabled={loading}
+                >
+                  Continue as Guest
+                </button>
+                <p className="guest-note" style={{ fontSize: '0.75em', color: 'rgba(255,255,255,0.7)', marginTop: '8px', textAlign: 'center' }}>
+                  Explore without an account
+                </p>
               </div>
             </div>
           </form>
