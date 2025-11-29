@@ -54,63 +54,72 @@ const DashboardNavigation = ({ activeSection, setActiveSection }) => {
       icon: '📝',
       label: 'Daily Log',
       description: 'Record your daily wellness and track your progress',
-      class: 'daily-log'
+      class: 'daily-log',
+      image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop'
     },
     {
       id: 'dashboard',
       icon: '📈',
       label: 'Health Dashboard',
       description: 'View comprehensive health metrics and analytics',
-      class: 'dashboard'
+      class: 'dashboard',
+      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop'
     },
     {
       id: 'recommendations',
       icon: '💡',
       label: 'Recommendations',
       description: 'Get personalized wellness tips and suggestions',
-      class: 'recommendations'
+      class: 'recommendations',
+      image: 'https://images.unsplash.com/photo-1506126613408-eca2ce5ddc07?w=400&h=300&fit=crop'
     },
     {
       id: 'ai-mentor',
       icon: '🤖',
       label: 'AI Mentor',
       description: 'Chat with your Gen Z wellness mentor for support',
-      class: 'ai-mentor'
+      class: 'ai-mentor',
+      image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop'
     },
     {
       id: 'nearby-doctors',
       icon: '🏥',
       label: 'Nearby Doctors',
       description: 'Find nearby healthcare providers and get directions',
-      class: 'nearby-doctors'
+      class: 'nearby-doctors',
+      image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=300&fit=crop'
     },
     {
       id: 'records',
       icon: '📋',
       label: 'My Records',
       description: 'Add and manage your personal records stored in your Google account',
-      class: 'records'
+      class: 'records',
+      image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=300&fit=crop'
     },
     {
       id: 'screen-time',
       icon: '📊',
       label: 'Screen Time',
       description: 'Track your daily screen time and monitor usage patterns',
-      class: 'screen-time'
+      class: 'screen-time',
+      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop'
     },
     {
       id: 'stress',
       icon: '😟',
       label: 'Stress Detection',
       description: 'Real-time stress level monitoring using facial analysis',
-      class: 'stress'
+      class: 'stress',
+      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop'
     },
     {
       id: 'anti-doze',
       icon: '😴',
       label: 'Anti-Doze',
       description: 'Stay alert with drowsiness detection and wake-up alerts',
-      class: 'anti-doze'
+      class: 'anti-doze',
+      image: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=400&h=300&fit=crop'
     }
   ];
 
@@ -126,6 +135,7 @@ const DashboardNavigation = ({ activeSection, setActiveSection }) => {
             onClick={() => handleCardClick(item.id, item.id)}
           >
             <div className={`nav-card ${item.class} ${isActive ? 'active' : ''} ${isClicked ? 'clicked' : ''}`}>
+              <div className="nav-card-background" style={{ backgroundImage: `url(${item.image})` }}></div>
               <div className="nav-card-logo">
                 <span className="nav-circle nav-circle1"></span>
                 <span className="nav-circle nav-circle2"></span>
@@ -135,6 +145,7 @@ const DashboardNavigation = ({ activeSection, setActiveSection }) => {
               </div>
 
               <div className="nav-card-content">
+                <div className="nav-icon">{item.icon}</div>
                 <span className="nav-title">{item.label}</span>
                 <span className="nav-text">{item.description}</span>
               </div>

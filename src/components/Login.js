@@ -112,292 +112,188 @@ const Login = () => {
   };
 
   return (
-    <div className="login-page-wrapper">
-      <div className="section">
-        <div className="container">
-          <div className="row full-height justify-content-center">
-            <div className="col-12 text-center align-self-center py-5">
-              <div className="section pb-5 pt-5 pt-sm-2 text-center">
-                <h6 className="mb-0 pb-3">
-                  <span>Log In </span>
-                  <span>Sign Up</span>
-                </h6>
-              
-              <input
-                className="checkbox"
-                type="checkbox"
-                id="reg-log"
-                name="reg-log"
-                checked={!isLogin}
-                onChange={handleToggle}
-              />
-              <label htmlFor="reg-log"></label>
-
-              <div className="card-3d-wrap mx-auto">
-                <div className="card-3d-wrapper">
-                  {/* Login Card */}
-                  <div className="card-front">
-                    <div className="center-wrap">
-                      <div className="section text-center">
-                        <h4 className="mb-4 pb-3">Log In</h4>
-                        
-                        {error && (
-                          <div style={{
-                            backgroundColor: '#ff4444',
-                            color: '#fff',
-                            padding: '10px',
-                            borderRadius: '4px',
-                            marginBottom: '20px',
-                            fontSize: '14px'
-                          }}>
-                            {error}
-                          </div>
-                        )}
-
-                        <form onSubmit={handleLogin}>
-                          <div className="form-group">
-                            <input
-                              type="email"
-                              name="email"
-                              className="form-style"
-                              placeholder="Your Email"
-                              id="logemail"
-                              value={formData.email}
-                              onChange={handleInputChange}
-                              required
-                              autoComplete="off"
-                            />
-                            <i className="input-icon uil uil-at"></i>
-                          </div>
-
-                          <div className="form-group mt-2" style={{ position: 'relative' }}>
-                            <input
-                              type={showPassword ? "text" : "password"}
-                              name="password"
-                              className="form-style"
-                              placeholder="Your Password"
-                              id="logpass"
-                              value={formData.password}
-                              onChange={handleInputChange}
-                              required
-                              autoComplete="off"
-                            />
-                            <i className="input-icon uil uil-lock-alt"></i>
-                            <span
-                              onClick={() => setShowPassword(!showPassword)}
-                              style={{
-                                position: 'absolute',
-                                right: '15px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                cursor: 'pointer',
-                                color: '#ffeba7',
-                                fontSize: '18px',
-                                zIndex: 10,
-                                background: 'none',
-                                border: 'none',
-                                padding: 0,
-                                outline: 'none'
-                              }}
-                            >
-                              <i className={`uil ${showPassword ? 'uil-eye-slash' : 'uil-eye'}`}></i>
-                            </span>
-                          </div>
-
-                          <button
-                            type="submit"
-                            className="btn mt-4"
-                            disabled={loading}
-                            style={{ 
-                              cursor: loading ? 'not-allowed' : 'pointer',
-                              width: '100%'
-                            }}
-                          >
-                            {loading ? 'Loading...' : 'submit'}
-                          </button>
-                        </form>
-
-                        <div className="mt-4" style={{ textAlign: 'center' }}>
-                          <div style={{ 
-                            margin: '20px 0', 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center',
-                            color: '#c4c3ca',
-                            fontSize: '14px'
-                          }}>
-                            <span style={{ flex: 1, height: '1px', background: '#2a2b38' }}></span>
-                            <span style={{ padding: '0 15px' }}>OR</span>
-                            <span style={{ flex: 1, height: '1px', background: '#2a2b38' }}></span>
-                          </div>
-                          
-                          <div style={{ 
-                            display: 'flex', 
-                            justifyContent: 'center',
-                            marginTop: '15px'
-                          }}>
-                            <GoogleLogin
-                              onSuccess={handleGoogleSuccess}
-                              onError={handleGoogleError}
-                              useOneTap
-                              theme="filled_black"
-                              size="large"
-                              text="signin_with"
-                              shape="rectangular"
-                              logo_alignment="left"
-                            />
-                          </div>
-                        </div>
-
-                        <p className="mb-0 mt-4 text-center">
-                          <a href="#0" className="link" onClick={(e) => {
-                            e.preventDefault();
-                            alert('Forgot password feature coming soon!');
-                          }}>
-                            Forgot your password?
-                          </a>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Signup Card */}
-                  <div className="card-back">
-                    <div className="center-wrap">
-                      <div className="section text-center">
-                        <h4 className="mb-4 pb-3">Sign Up</h4>
-                        
-                        {error && (
-                          <div style={{
-                            backgroundColor: '#ff4444',
-                            color: '#fff',
-                            padding: '10px',
-                            borderRadius: '4px',
-                            marginBottom: '20px',
-                            fontSize: '14px'
-                          }}>
-                            {error}
-                          </div>
-                        )}
-
-                        <form onSubmit={handleSignup}>
-                          <div className="form-group">
-                            <input
-                              type="text"
-                              name="name"
-                              className="form-style"
-                              placeholder="Your Full Name"
-                              id="logname"
-                              value={formData.name}
-                              onChange={handleInputChange}
-                              required
-                              autoComplete="off"
-                            />
-                            <i className="input-icon uil uil-user"></i>
-                          </div>
-
-                          <div className="form-group mt-2">
-                            <input
-                              type="email"
-                              name="email"
-                              className="form-style"
-                              placeholder="Your Email"
-                              id="logemail"
-                              value={formData.email}
-                              onChange={handleInputChange}
-                              required
-                              autoComplete="off"
-                            />
-                            <i className="input-icon uil uil-at"></i>
-                          </div>
-
-                          <div className="form-group mt-2" style={{ position: 'relative' }}>
-                            <input
-                              type={showPassword ? "text" : "password"}
-                              name="password"
-                              className="form-style"
-                              placeholder="Your Password"
-                              id="signpass"
-                              value={formData.password}
-                              onChange={handleInputChange}
-                              required
-                              autoComplete="off"
-                            />
-                            <i className="input-icon uil uil-lock-alt"></i>
-                            <span
-                              onClick={() => setShowPassword(!showPassword)}
-                              style={{
-                                position: 'absolute',
-                                right: '15px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                cursor: 'pointer',
-                                color: '#ffeba7',
-                                fontSize: '18px',
-                                zIndex: 10,
-                                background: 'none',
-                                border: 'none',
-                                padding: 0,
-                                outline: 'none'
-                              }}
-                            >
-                              <i className={`uil ${showPassword ? 'uil-eye-slash' : 'uil-eye'}`}></i>
-                            </span>
-                          </div>
-
-                          <button
-                            type="submit"
-                            className="btn mt-4"
-                            disabled={loading}
-                            style={{ 
-                              cursor: loading ? 'not-allowed' : 'pointer',
-                              width: '100%'
-                            }}
-                          >
-                            {loading ? 'Loading...' : 'submit'}
-                          </button>
-                        </form>
-
-                        <div className="mt-4" style={{ textAlign: 'center' }}>
-                          <div style={{ 
-                            margin: '20px 0', 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center',
-                            color: '#c4c3ca',
-                            fontSize: '14px'
-                          }}>
-                            <span style={{ flex: 1, height: '1px', background: '#2a2b38' }}></span>
-                            <span style={{ padding: '0 15px' }}>OR</span>
-                            <span style={{ flex: 1, height: '1px', background: '#2a2b38' }}></span>
-                          </div>
-                          
-                          <div style={{ 
-                            display: 'flex', 
-                            justifyContent: 'center',
-                            marginTop: '15px'
-                          }}>
-                            <GoogleLogin
-                              onSuccess={handleGoogleSuccess}
-                              onError={handleGoogleError}
-                              useOneTap
-                              theme="filled_black"
-                              size="large"
-                              text="signup_with"
-                              shape="rectangular"
-                              logo_alignment="left"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+    <div className="login-wrapper">
+      <div className="login-box">
+        {isLogin ? (
+          <form onSubmit={handleLogin}>
+            <h2>Login</h2>
+            
+            {error && (
+              <div className="error-message">
+                {error}
               </div>
+            )}
+
+            <div className="input-box">
+              <span className="icon">
+                <ion-icon name="mail"></ion-icon>
+              </span>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+                autoComplete="off"
+              />
+              <label>Email</label>
+            </div>
+
+            <div className="input-box">
+              <span className="icon">
+                <ion-icon name="lock-closed"></ion-icon>
+              </span>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                autoComplete="off"
+              />
+              <label>Password</label>
+              <span
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <ion-icon name={showPassword ? "eye-off" : "eye"}></ion-icon>
+              </span>
+            </div>
+
+            <div className="remember-forgot">
+              <label>
+                <input type="checkbox" /> Remember me
+              </label>
+              <a href="#" onClick={(e) => {
+                e.preventDefault();
+                alert('Forgot password feature coming soon!');
+              }}>Forgot Password?</a>
+            </div>
+
+            <button type="submit" disabled={loading}>
+              {loading ? 'Loading...' : 'Login'}
+            </button>
+
+            <div className="register-link">
+              <p>Don't have an account? <a href="#" onClick={(e) => {
+                e.preventDefault();
+                handleToggle();
+              }}>Register</a></p>
+            </div>
+
+            <div className="google-login-container">
+              <div className="divider">
+                <span></span>
+                <span>OR</span>
+                <span></span>
+              </div>
+              <div className="google-button-wrapper">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  useOneTap
+                  theme="filled_black"
+                  size="large"
+                  text="signin_with"
+                  shape="rectangular"
+                  logo_alignment="left"
+                />
               </div>
             </div>
-          </div>
-        </div>
+          </form>
+        ) : (
+          <form onSubmit={handleSignup}>
+            <h2>Sign Up</h2>
+            
+            {error && (
+              <div className="error-message">
+                {error}
+              </div>
+            )}
+
+            <div className="input-box">
+              <span className="icon">
+                <ion-icon name="person"></ion-icon>
+              </span>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+                autoComplete="off"
+              />
+              <label>Full Name</label>
+            </div>
+
+            <div className="input-box">
+              <span className="icon">
+                <ion-icon name="mail"></ion-icon>
+              </span>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+                autoComplete="off"
+              />
+              <label>Email</label>
+            </div>
+
+            <div className="input-box">
+              <span className="icon">
+                <ion-icon name="lock-closed"></ion-icon>
+              </span>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                autoComplete="off"
+              />
+              <label>Password</label>
+              <span
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <ion-icon name={showPassword ? "eye-off" : "eye"}></ion-icon>
+              </span>
+            </div>
+
+            <button type="submit" disabled={loading}>
+              {loading ? 'Loading...' : 'Sign Up'}
+            </button>
+
+            <div className="register-link">
+              <p>Already have an account? <a href="#" onClick={(e) => {
+                e.preventDefault();
+                handleToggle();
+              }}>Login</a></p>
+            </div>
+
+            <div className="google-login-container">
+              <div className="divider">
+                <span></span>
+                <span>OR</span>
+                <span></span>
+              </div>
+              <div className="google-button-wrapper">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  useOneTap
+                  theme="filled_black"
+                  size="large"
+                  text="signup_with"
+                  shape="rectangular"
+                  logo_alignment="left"
+                />
+              </div>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

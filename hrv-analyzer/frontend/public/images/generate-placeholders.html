@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Placeholder Images</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1e293b;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        canvas {
+            border: 2px solid #4f46e5;
+            margin: 10px;
+            border-radius: 8px;
+        }
+        button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #6366f1;
+        }
+        .image-group {
+            margin: 20px 0;
+            padding: 20px;
+            background: #0f172a;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HRV Analyzer - Placeholder Image Generator</h1>
+        <p>Click the buttons below to generate placeholder images for the feature cards.</p>
+        
+        <div class="image-group">
+            <h2>Upload Feature</h2>
+            <canvas id="upload-cover" width="400" height="600"></canvas>
+            <canvas id="upload-title" width="300" height="100"></canvas>
+            <canvas id="upload-character" width="200" height="300"></canvas>
+            <button onclick="generateUploadImages()">Generate Upload Images</button>
+        </div>
+
+        <div class="image-group">
+            <h2>Analysis Feature</h2>
+            <canvas id="analysis-cover" width="400" height="600"></canvas>
+            <canvas id="analysis-title" width="300" height="100"></canvas>
+            <canvas id="analysis-character" width="200" height="300"></canvas>
+            <button onclick="generateAnalysisImages()">Generate Analysis Images</button>
+        </div>
+
+        <div class="image-group">
+            <h2>Charts Feature</h2>
+            <canvas id="charts-cover" width="400" height="600"></canvas>
+            <canvas id="charts-title" width="300" height="100"></canvas>
+            <canvas id="charts-character" width="200" height="300"></canvas>
+            <button onclick="generateChartsImages()">Generate Charts Images</button>
+        </div>
+
+        <div class="image-group">
+            <h2>Health Feature</h2>
+            <canvas id="health-cover" width="400" height="600"></canvas>
+            <canvas id="health-title" width="300" height="100"></canvas>
+            <canvas id="health-character" width="200" height="300"></canvas>
+            <button onclick="generateHealthImages()">Generate Health Images</button>
+        </div>
+
+        <div class="image-group">
+            <button onclick="downloadAll()" style="background: #10b981; font-size: 16px; padding: 15px 30px;">
+                Download All Images
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function drawCover(canvas, color, text) {
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, color + '40');
+            gradient.addColorStop(1, color + '20');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add pattern
+            ctx.strokeStyle = color + '60';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 20; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * 20, 0);
+                ctx.lineTo(i * 20, canvas.height);
+                ctx.stroke();
+            }
+            
+            // Add text
+            ctx.fillStyle = color;
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+        }
+
+        function drawTitle(canvas, text, color) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = color;
+            ctx.font = 'bold 32px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+        }
+
+        function drawCharacter(canvas, emoji, color) {
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, canvas.width);
+            gradient.addColorStop(0, color + '40');
+            gradient.addColorStop(1, color + '10');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = color;
+            ctx.font = '120px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(emoji, canvas.width / 2, canvas.height / 2);
+        }
+
+        function generateUploadImages() {
+            drawCover(document.getElementById('upload-cover'), '#4f46e5', 'File Upload');
+            drawTitle(document.getElementById('upload-title'), 'File Upload', '#4f46e5');
+            drawCharacter(document.getElementById('upload-character'), '📤', '#4f46e5');
+        }
+
+        function generateAnalysisImages() {
+            drawCover(document.getElementById('analysis-cover'), '#10b981', 'HRV Analysis');
+            drawTitle(document.getElementById('analysis-title'), 'HRV Analysis', '#10b981');
+            drawCharacter(document.getElementById('analysis-character'), '📊', '#10b981');
+        }
+
+        function generateChartsImages() {
+            drawCover(document.getElementById('charts-cover'), '#f59e0b', 'Real-time Charts');
+            drawTitle(document.getElementById('charts-title'), 'Real-time Charts', '#f59e0b');
+            drawCharacter(document.getElementById('charts-character'), '📈', '#f59e0b');
+        }
+
+        function generateHealthImages() {
+            drawCover(document.getElementById('health-cover'), '#ef4444', 'Health Status');
+            drawTitle(document.getElementById('health-title'), 'Health Status', '#ef4444');
+            drawCharacter(document.getElementById('health-character'), '❤️', '#ef4444');
+        }
+
+        function downloadCanvas(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadAll() {
+            const images = [
+                { canvas: 'upload-cover', filename: 'upload-cover.jpg' },
+                { canvas: 'upload-title', filename: 'upload-title.png' },
+                { canvas: 'upload-character', filename: 'upload-character.png' },
+                { canvas: 'analysis-cover', filename: 'analysis-cover.jpg' },
+                { canvas: 'analysis-title', filename: 'analysis-title.png' },
+                { canvas: 'analysis-character', filename: 'analysis-character.png' },
+                { canvas: 'charts-cover', filename: 'charts-cover.jpg' },
+                { canvas: 'charts-title', filename: 'charts-title.png' },
+                { canvas: 'charts-character', filename: 'charts-character.png' },
+                { canvas: 'health-cover', filename: 'health-cover.jpg' },
+                { canvas: 'health-title', filename: 'health-title.png' },
+                { canvas: 'health-character', filename: 'health-character.png' }
+            ];
+
+            images.forEach((img, index) => {
+                setTimeout(() => {
+                    const canvas = document.getElementById(img.canvas);
+                    if (canvas) {
+                        downloadCanvas(canvas, img.filename);
+                    }
+                }, index * 200);
+            });
+        }
+
+        // Generate all on load
+        window.onload = function() {
+            generateUploadImages();
+            generateAnalysisImages();
+            generateChartsImages();
+            generateHealthImages();
+        };
+    </script>
+</body>
+</html>
+
