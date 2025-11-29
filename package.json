@@ -18,12 +18,16 @@
     "three": "^0.158.0"
   },
   "scripts": {
-    "start": "set PORT=3000 && react-scripts start",
+    "start": "react-scripts start",
     "start:backend": "cd backend && node server.js",
     "start:all": "concurrently \"npm run start:backend\" \"npm start\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   },
   "eslintConfig": {
     "extends": [
