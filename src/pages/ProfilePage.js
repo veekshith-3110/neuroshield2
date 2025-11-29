@@ -52,7 +52,7 @@ const ProfilePage = () => {
       newErrors.email = 'Invalid email format';
     }
 
-    if (formData.phone && !/^\+?[1-9]\d{1,14}$/.test(formData.phone.replace(/[\s\-\(\)]/g, ''))) {
+    if (formData.phone && !/^\+?[1-9]\d{1,14}$/.test(formData.phone.replace(/[\s\-()]/g, ''))) {
       newErrors.phone = 'Invalid phone number format';
     }
 

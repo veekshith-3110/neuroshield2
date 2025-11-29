@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { calculateRisk } from '../utils/riskCalculator';
 import { sendAlertEmail } from '../utils/emailService';
 import screenTimeTracker from '../utils/screenTimeTracker';
-import { getHealthSummary, getTodaySteps, getLatestHeartRate } from '../utils/healthDataService';
+import { getHealthSummary } from '../utils/healthDataService';
 
 const DailyLogForm = () => {
   const { addDailyLog, getTodayLog } = useApp();

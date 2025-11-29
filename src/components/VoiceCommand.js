@@ -1,17 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './VoiceCommand.css';
 
-const VoiceCommand = () => {
-  const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState('');
-  const [error, setError] = useState(null);
-  const [isSupported, setIsSupported] = useState(false);
-  const recognitionRef = useRef(null);
-  const navigate = useNavigate();
-
-  // Voice command mappings - expanded with more variations
-  const commandMap = {
+// Voice command mappings - expanded with more variations
+const commandMap = {
     // Daily Log
     'daily log': 'daily-log',
     'daily': 'daily-log',
@@ -81,7 +73,25 @@ const VoiceCommand = () => {
     'sleep detection': 'anti-doze',
     'drowsy': 'anti-doze',
     'anti doze detection': 'anti-doze'
-  };
+};
+
+const VoiceCommand = () => {
+  const [isListening, setIsListening] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [error, setError] = useState(null);
+  const [isSupported, setIsSupported] = useState(false);
+  const recognitionRef = useRef(null);
+  const navigate = useNavigate();
+
+  const handleNavigation = useCallback((route) => {
+    if (route === 'dashboard') {
+      navigate('/dashboard/dashboard', { replace: false });
+    } else {
+      navigate(`/dashboard/${route}`, { replace: false });
+    }
+    setIsListening(false);
+    setTranscript('');
+  }, [navigate]);
 
   useEffect(() => {
     // Check if browser supports speech recognition
@@ -166,17 +176,7 @@ const VoiceCommand = () => {
         recognitionRef.current.stop();
       }
     };
-  }, []);
-
-  const handleNavigation = (route) => {
-    if (route === 'dashboard') {
-      navigate('/dashboard/dashboard', { replace: false });
-    } else {
-      navigate(`/dashboard/${route}`, { replace: false });
-    }
-    setIsListening(false);
-    setTranscript('');
-  };
+  }, [handleNavigation]);
 
   const startListening = () => {
     if (!isSupported) {

@@ -9,14 +9,8 @@
 
 import React, { useState, useEffect } from 'react';
 
-const NearbyDoctors = () => {
-  const [userLocation, setUserLocation] = useState(null);
-  const [doctors, setDoctors] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  // Sample doctors data (in production, this would come from an API)
-  const sampleDoctors = [
+// Sample doctors data (in production, this would come from an API)
+const sampleDoctors = [
     {
       id: 1,
       name: 'City General Hospital',
@@ -72,7 +66,13 @@ const NearbyDoctors = () => {
       lat: 12.9700,
       lng: 77.5950
     }
-  ];
+];
+
+const NearbyDoctors = () => {
+  const [userLocation, setUserLocation] = useState(null);
+  const [doctors, setDoctors] = useState([]);
+  const [loading] = useState(false);
+  const [error, setError] = useState('');
 
   // Get user's current location
   useEffect(() => {

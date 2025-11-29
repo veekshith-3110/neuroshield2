@@ -12,7 +12,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 
 const AIMentorAvatar = () => {
-  const { data, getTodayLog } = useApp();
+  const { getTodayLog } = useApp();
   const [avatarType, setAvatarType] = useState('panda'); // panda, fox, robot, fairy
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');

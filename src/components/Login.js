@@ -164,10 +164,13 @@ const Login = () => {
               <label>
                 <input type="checkbox" /> Remember me
               </label>
-              <a href="#" onClick={(e) => {
-                e.preventDefault();
-                alert('Forgot password feature coming soon!');
-              }}>Forgot Password?</a>
+              <button 
+                type="button"
+                className="forgot-password-link"
+                onClick={() => {
+                  alert('Forgot password feature coming soon!');
+                }}
+              >Forgot Password?</button>
             </div>
 
             <button type="submit" disabled={loading}>
@@ -175,10 +178,11 @@ const Login = () => {
             </button>
 
             <div className="register-link">
-              <p>Don't have an account? <a href="#" onClick={(e) => {
-                e.preventDefault();
-                handleToggle();
-              }}>Register</a></p>
+              <p>Don't have an account? <button 
+                type="button"
+                className="register-link-button"
+                onClick={handleToggle}
+              >Register</button></p>
             </div>
 
             <div className="google-login-container">
@@ -267,10 +271,11 @@ const Login = () => {
             </button>
 
             <div className="register-link">
-              <p>Already have an account? <a href="#" onClick={(e) => {
-                e.preventDefault();
-                handleToggle();
-              }}>Login</a></p>
+              <p>Already have an account? <button 
+                type="button"
+                className="register-link-button"
+                onClick={handleToggle}
+              >Login</button></p>
             </div>
 
             <div className="google-login-container">

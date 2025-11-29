@@ -1,9 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
   checkRateLimit,
-  recordLoginAttempt,
-  validateJWTStructure,
-  storeTokens
+  recordLoginAttempt
 } from '../utils/oauthSecurity';
 
 const AuthContext = createContext();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import DashboardNavigation from '../components/DashboardNavigation';
@@ -26,18 +26,18 @@ const RecordsPage = () => {
     notes: ''
   });
 
-  useEffect(() => {
-    if (user?.id) {
-      loadRecords();
-    }
-  }, [user]);
-
-  const loadRecords = () => {
+  const loadRecords = useCallback(() => {
     if (user?.id) {
       const userRecords = getUserRecords(user.id);
       setRecords(userRecords);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user?.id) {
+      loadRecords();
+    }
+  }, [user, loadRecords]);
 
   const handleLogout = () => {
     logout();
