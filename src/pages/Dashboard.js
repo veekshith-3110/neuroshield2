@@ -16,28 +16,28 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <div className="container mx-auto px-4 py-4 md:py-8 max-w-6xl">
         {/* Header with Logout */}
-        <header className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 md:mb-8 gap-4">
+          <div className="flex-1">
+            <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-2">
               🛡️ Neuroshield
             </h1>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
               {user?.picture && (
                 <img 
                   src={user.picture} 
                   alt={user.name} 
-                  className="w-10 h-10 rounded-full border-2 border-purple-500"
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-purple-500"
                 />
               )}
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-600 text-sm md:text-lg">
                 Welcome back, {user?.name || 'User'}! 👋
-                {user?.phone && <span className="text-sm text-gray-500 ml-2">({user.phone})</span>}
+                {user?.phone && <span className="text-xs md:text-sm text-gray-500 ml-2">({user.phone})</span>}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full md:w-auto justify-end">
             <ProfileIcon />
             <AnimatedLogoutButton onLogout={handleLogout} />
           </div>
